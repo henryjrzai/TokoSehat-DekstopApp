@@ -65,3 +65,33 @@ export const deleteTransaksi = async (id: number): Promise<void> => {
     throw error;
   }
 };
+
+// Interface for create transaksi request (sesuai API spec)
+export interface CreateTransaksiRequest {
+  kasir_id: number;
+  dibayar: number;
+  items: {
+    produk_id: number;
+    jumlah: number;
+  }[];
+}
+
+// Interface for create transaksi response
+interface CreateTransaksiResponse {
+  status: boolean;
+  message: string;
+  data: Transaksi;
+}
+
+// Create new transaksi
+export const createTransaksi = async (
+  data: CreateTransaksiRequest
+): Promise<CreateTransaksiResponse> => {
+  try {
+    const response = await axiosInstance.post("/transaksi", data);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating transaksi:", error);
+    throw error;
+  }
+};
