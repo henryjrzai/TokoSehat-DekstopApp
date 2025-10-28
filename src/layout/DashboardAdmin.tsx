@@ -1,8 +1,18 @@
+import { useAuth } from "../hooks/useAuth";
+
 export default function DashboardAdmin({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    if (window.confirm("Apakah Anda yakin ingin logout?")) {
+      logout();
+    }
+  };
+
   return (
     <div>
       <div id="app">
@@ -55,7 +65,12 @@ export default function DashboardAdmin({
                   </a>
                 </li>
                 <li className="sidebar-item mt-5">
-                  <button className="btn btn-danger w-100">Logout</button>
+                  <button
+                    className="btn btn-danger w-100"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
                 </li>
               </ul>
             </div>
