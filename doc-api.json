@@ -528,6 +528,2168 @@
         }
       }
     },
+    "/laporan/periode": {
+      "post": {
+        "operationId": "laporan.laporanPeriode",
+        "summary": "Laporan transaksi berdasarkan rentang periode",
+        "tags": [
+          "Laporan"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tanggal_awal": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "tanggal_akhir": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                },
+                "required": [
+                  "tanggal_awal",
+                  "tanggal_akhir"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Laporan transaksi periode berhasil diambil."
+                      ]
+                    },
+                    "periode": {
+                      "type": "object",
+                      "properties": {
+                        "tanggal_awal": {
+                          "type": "string"
+                        },
+                        "tanggal_akhir": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "tanggal_awal",
+                        "tanggal_akhir"
+                      ]
+                    },
+                    "ringkasan": {
+                      "type": "object",
+                      "properties": {
+                        "total_transaksi": {
+                          "type": "string"
+                        },
+                        "total_pendapatan": {
+                          "type": "string"
+                        },
+                        "total_item_terjual": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "total_transaksi",
+                        "total_pendapatan",
+                        "total_item_terjual"
+                      ]
+                    },
+                    "data": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "periode",
+                    "ringkasan",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Tidak ada transaksi pada periode yang dipilih."
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Gagal mengambil laporan transaksi."
+                      ]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/laporan/periode/pdf": {
+      "post": {
+        "operationId": "laporan.exportPeriodePdf",
+        "summary": "Export laporan transaksi periode ke PDF",
+        "tags": [
+          "Laporan"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tanggal_awal": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "tanggal_akhir": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                },
+                "required": [
+                  "tanggal_awal",
+                  "tanggal_akhir"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Tidak ada transaksi pada periode yang dipilih."
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Gagal export PDF laporan transaksi."
+                      ]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/laporan/bulanan": {
+      "post": {
+        "operationId": "laporan.laporanBulanan",
+        "summary": "Laporan transaksi per bulan",
+        "tags": [
+          "Laporan"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "bulan": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 12
+                  },
+                  "tahun": {
+                    "type": "integer",
+                    "minimum": 2000,
+                    "maximum": 2100
+                  }
+                },
+                "required": [
+                  "bulan",
+                  "tahun"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Laporan transaksi bulanan berhasil diambil."
+                      ]
+                    },
+                    "periode": {
+                      "type": "object",
+                      "properties": {
+                        "bulan": {
+                          "type": "string"
+                        },
+                        "tahun": {
+                          "type": "string"
+                        },
+                        "nama_bulan": {
+                          "type": "string"
+                        },
+                        "tanggal_awal": {
+                          "type": "string"
+                        },
+                        "tanggal_akhir": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "bulan",
+                        "tahun",
+                        "nama_bulan",
+                        "tanggal_awal",
+                        "tanggal_akhir"
+                      ]
+                    },
+                    "ringkasan": {
+                      "type": "object",
+                      "properties": {
+                        "total_transaksi": {
+                          "type": "string"
+                        },
+                        "total_pendapatan": {
+                          "type": "string"
+                        },
+                        "total_item_terjual": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "total_transaksi",
+                        "total_pendapatan",
+                        "total_item_terjual"
+                      ]
+                    },
+                    "data_per_tanggal": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "periode",
+                    "ringkasan",
+                    "data_per_tanggal"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Tidak ada transaksi pada bulan yang dipilih."
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Gagal mengambil laporan transaksi bulanan."
+                      ]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/laporan/bulanan/pdf": {
+      "post": {
+        "operationId": "laporan.exportBulananPdf",
+        "summary": "Export laporan transaksi bulanan ke PDF",
+        "tags": [
+          "Laporan"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "bulan": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 12
+                  },
+                  "tahun": {
+                    "type": "integer",
+                    "minimum": 2000,
+                    "maximum": 2100
+                  }
+                },
+                "required": [
+                  "bulan",
+                  "tahun"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Tidak ada transaksi pada bulan yang dipilih."
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Gagal export PDF laporan transaksi bulanan."
+                      ]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/laporan/produk-terlaris": {
+      "post": {
+        "operationId": "laporan.produkTerlaris",
+        "summary": "Laporan produk terlaris dalam periode",
+        "tags": [
+          "Laporan"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tanggal_awal": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "tanggal_akhir": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "limit": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 100
+                  }
+                },
+                "required": [
+                  "tanggal_awal",
+                  "tanggal_akhir"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Laporan produk terlaris berhasil diambil."
+                      ]
+                    },
+                    "periode": {
+                      "type": "object",
+                      "properties": {
+                        "tanggal_awal": {
+                          "type": "string"
+                        },
+                        "tanggal_akhir": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "tanggal_awal",
+                        "tanggal_akhir"
+                      ]
+                    },
+                    "data": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "periode",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Tidak ada data produk terlaris pada periode yang dipilih."
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Gagal mengambil laporan produk terlaris."
+                      ]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/laporan/produk-terlaris/pdf": {
+      "post": {
+        "operationId": "laporan.exportProdukTerlarisPdf",
+        "summary": "Export laporan produk terlaris ke PDF",
+        "tags": [
+          "Laporan"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tanggal_awal": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "tanggal_akhir": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "limit": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 100
+                  }
+                },
+                "required": [
+                  "tanggal_awal",
+                  "tanggal_akhir"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Tidak ada data produk terlaris pada periode yang dipilih."
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Gagal export PDF laporan produk terlaris."
+                      ]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/statistik/dashboard": {
+      "get": {
+        "operationId": "laporan.dashboardStatistik",
+        "summary": "Dashboard statistik gabungan\nMengembalikan ringkasan statistik untuk cards",
+        "tags": [
+          "Laporan"
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Dashboard statistik berhasil diambil."
+                      ]
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "cards": {
+                          "type": "object",
+                          "properties": {
+                            "hari_ini": {
+                              "type": "object",
+                              "properties": {
+                                "total_transaksi": {
+                                  "type": "integer"
+                                },
+                                "total_pendapatan": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": [
+                                "total_transaksi",
+                                "total_pendapatan"
+                              ]
+                            },
+                            "minggu_ini": {
+                              "type": "object",
+                              "properties": {
+                                "total_transaksi": {
+                                  "type": "integer"
+                                },
+                                "total_pendapatan": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": [
+                                "total_transaksi",
+                                "total_pendapatan"
+                              ]
+                            },
+                            "bulan_ini": {
+                              "type": "object",
+                              "properties": {
+                                "total_transaksi": {
+                                  "type": "integer"
+                                },
+                                "total_pendapatan": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": [
+                                "total_transaksi",
+                                "total_pendapatan"
+                              ]
+                            },
+                            "tahun_ini": {
+                              "type": "object",
+                              "properties": {
+                                "total_transaksi": {
+                                  "type": "integer"
+                                },
+                                "total_pendapatan": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": [
+                                "total_transaksi",
+                                "total_pendapatan"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "hari_ini",
+                            "minggu_ini",
+                            "bulan_ini",
+                            "tahun_ini"
+                          ]
+                        },
+                        "inventory": {
+                          "type": "object",
+                          "properties": {
+                            "total_produk": {
+                              "type": "string"
+                            },
+                            "total_kategori": {
+                              "type": "string"
+                            },
+                            "produk_stok_menipis": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "total_produk",
+                            "total_kategori",
+                            "produk_stok_menipis"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "cards",
+                        "inventory"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Gagal mengambil dashboard statistik."
+                      ]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/statistik/comparison": {
+      "get": {
+        "operationId": "laporan.statistikComparison",
+        "summary": "Statistik untuk comparison chart (Bar Chart)\nMembandingkan hari ini, minggu ini, bulan ini, tahun ini",
+        "tags": [
+          "Laporan"
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Statistik comparison berhasil diambil."
+                      ]
+                    },
+                    "chart_data": {
+                      "type": "object",
+                      "properties": {
+                        "labels": {
+                          "type": "array",
+                          "prefixItems": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "Hari Ini"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "Minggu Ini"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "Bulan Ini"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "Tahun Ini"
+                              ]
+                            }
+                          ],
+                          "minItems": 4,
+                          "maxItems": 4,
+                          "additionalItems": false
+                        },
+                        "datasets": {
+                          "type": "array",
+                          "prefixItems": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Jumlah Transaksi"
+                                  ]
+                                },
+                                "data": {
+                                  "type": "array",
+                                  "prefixItems": [
+                                    {
+                                      "type": "integer"
+                                    },
+                                    {
+                                      "type": "integer"
+                                    },
+                                    {
+                                      "type": "integer"
+                                    },
+                                    {
+                                      "type": "integer"
+                                    }
+                                  ],
+                                  "minItems": 4,
+                                  "maxItems": 4,
+                                  "additionalItems": false
+                                },
+                                "backgroundColor": {
+                                  "type": "array",
+                                  "prefixItems": [
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "rgba(255, 99, 132, 0.5)"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "rgba(54, 162, 235, 0.5)"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "rgba(255, 206, 86, 0.5)"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "rgba(75, 192, 192, 0.5)"
+                                      ]
+                                    }
+                                  ],
+                                  "minItems": 4,
+                                  "maxItems": 4,
+                                  "additionalItems": false
+                                },
+                                "borderColor": {
+                                  "type": "array",
+                                  "prefixItems": [
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "rgba(255, 99, 132, 1)"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "rgba(54, 162, 235, 1)"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "rgba(255, 206, 86, 1)"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "rgba(75, 192, 192, 1)"
+                                      ]
+                                    }
+                                  ],
+                                  "minItems": 4,
+                                  "maxItems": 4,
+                                  "additionalItems": false
+                                },
+                                "borderWidth": {
+                                  "type": "integer",
+                                  "enum": [
+                                    2
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "label",
+                                "data",
+                                "backgroundColor",
+                                "borderColor",
+                                "borderWidth"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Total Pendapatan (Rp)"
+                                  ]
+                                },
+                                "data": {
+                                  "type": "array",
+                                  "prefixItems": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    }
+                                  ],
+                                  "minItems": 4,
+                                  "maxItems": 4,
+                                  "additionalItems": false
+                                },
+                                "backgroundColor": {
+                                  "type": "array",
+                                  "prefixItems": [
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "rgba(153, 102, 255, 0.5)"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "rgba(255, 159, 64, 0.5)"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "rgba(199, 199, 199, 0.5)"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "rgba(83, 102, 255, 0.5)"
+                                      ]
+                                    }
+                                  ],
+                                  "minItems": 4,
+                                  "maxItems": 4,
+                                  "additionalItems": false
+                                },
+                                "borderColor": {
+                                  "type": "array",
+                                  "prefixItems": [
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "rgba(153, 102, 255, 1)"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "rgba(255, 159, 64, 1)"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "rgba(199, 199, 199, 1)"
+                                      ]
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "rgba(83, 102, 255, 1)"
+                                      ]
+                                    }
+                                  ],
+                                  "minItems": 4,
+                                  "maxItems": 4,
+                                  "additionalItems": false
+                                },
+                                "borderWidth": {
+                                  "type": "integer",
+                                  "enum": [
+                                    2
+                                  ]
+                                },
+                                "yAxisID": {
+                                  "type": "string",
+                                  "enum": [
+                                    "y1"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "label",
+                                "data",
+                                "backgroundColor",
+                                "borderColor",
+                                "borderWidth",
+                                "yAxisID"
+                              ]
+                            }
+                          ],
+                          "minItems": 2,
+                          "maxItems": 2,
+                          "additionalItems": false
+                        }
+                      },
+                      "required": [
+                        "labels",
+                        "datasets"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "chart_data"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Gagal mengambil statistik comparison."
+                      ]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/statistik/tahunan": {
+      "get": {
+        "operationId": "laporan.statistikTahunan",
+        "summary": "Statistik penjualan tahun ini (per bulan)\nData untuk Chart.js - Trend penjualan bulanan tahun berjalan",
+        "tags": [
+          "Laporan"
+        ],
+        "parameters": [
+          {
+            "name": "tahun",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Statistik penjualan tahunan berhasil diambil."
+                      ]
+                    },
+                    "periode": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "yearly"
+                          ]
+                        },
+                        "tahun": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "tahun"
+                      ]
+                    },
+                    "chart_data": {
+                      "type": "object",
+                      "properties": {
+                        "labels": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 0,
+                          "maxItems": 0,
+                          "additionalItems": false
+                        },
+                        "datasets": {
+                          "type": "array",
+                          "prefixItems": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Jumlah Transaksi"
+                                  ]
+                                },
+                                "data": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "minItems": 0,
+                                  "maxItems": 0,
+                                  "additionalItems": false
+                                },
+                                "backgroundColor": {
+                                  "type": "string",
+                                  "enum": [
+                                    "rgba(54, 162, 235, 0.5)"
+                                  ]
+                                },
+                                "borderColor": {
+                                  "type": "string",
+                                  "enum": [
+                                    "rgba(54, 162, 235, 1)"
+                                  ]
+                                },
+                                "borderWidth": {
+                                  "type": "integer",
+                                  "enum": [
+                                    2
+                                  ]
+                                },
+                                "tension": {
+                                  "type": "number",
+                                  "enum": [
+                                    0.4
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "label",
+                                "data",
+                                "backgroundColor",
+                                "borderColor",
+                                "borderWidth",
+                                "tension"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Total Pendapatan (Rp)"
+                                  ]
+                                },
+                                "data": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "minItems": 0,
+                                  "maxItems": 0,
+                                  "additionalItems": false
+                                },
+                                "backgroundColor": {
+                                  "type": "string",
+                                  "enum": [
+                                    "rgba(75, 192, 192, 0.5)"
+                                  ]
+                                },
+                                "borderColor": {
+                                  "type": "string",
+                                  "enum": [
+                                    "rgba(75, 192, 192, 1)"
+                                  ]
+                                },
+                                "borderWidth": {
+                                  "type": "integer",
+                                  "enum": [
+                                    2
+                                  ]
+                                },
+                                "tension": {
+                                  "type": "number",
+                                  "enum": [
+                                    0.4
+                                  ]
+                                },
+                                "yAxisID": {
+                                  "type": "string",
+                                  "enum": [
+                                    "y1"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "label",
+                                "data",
+                                "backgroundColor",
+                                "borderColor",
+                                "borderWidth",
+                                "tension",
+                                "yAxisID"
+                              ]
+                            }
+                          ],
+                          "minItems": 2,
+                          "maxItems": 2,
+                          "additionalItems": false
+                        }
+                      },
+                      "required": [
+                        "labels",
+                        "datasets"
+                      ]
+                    },
+                    "summary": {
+                      "type": "object",
+                      "properties": {
+                        "total_transaksi": {
+                          "type": "string"
+                        },
+                        "total_pendapatan": {
+                          "type": "string"
+                        },
+                        "rata_rata_per_bulan": {
+                          "type": "string"
+                        },
+                        "bulan_terbaik": {
+                          "type": "object",
+                          "properties": {
+                            "bulan": {
+                              "type": "string"
+                            },
+                            "pendapatan": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "bulan",
+                            "pendapatan"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "total_transaksi",
+                        "total_pendapatan",
+                        "rata_rata_per_bulan",
+                        "bulan_terbaik"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "periode",
+                    "chart_data",
+                    "summary"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Tahun tidak valid."
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Gagal mengambil statistik penjualan tahunan."
+                      ]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/statistik/bulanan": {
+      "get": {
+        "operationId": "laporan.statistikBulanan",
+        "summary": "Statistik penjualan bulan ini (per hari)\nData untuk Chart.js - Trend penjualan harian bulan berjalan",
+        "tags": [
+          "Laporan"
+        ],
+        "parameters": [
+          {
+            "name": "bulan",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tahun",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Statistik penjualan bulanan berhasil diambil."
+                      ]
+                    },
+                    "periode": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "monthly"
+                          ]
+                        },
+                        "bulan": {
+                          "type": "string"
+                        },
+                        "tahun": {
+                          "type": "string"
+                        },
+                        "nama_bulan": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "bulan",
+                        "tahun",
+                        "nama_bulan"
+                      ]
+                    },
+                    "chart_data": {
+                      "type": "object",
+                      "properties": {
+                        "labels": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 0,
+                          "maxItems": 0,
+                          "additionalItems": false
+                        },
+                        "datasets": {
+                          "type": "array",
+                          "prefixItems": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Jumlah Transaksi"
+                                  ]
+                                },
+                                "data": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "minItems": 0,
+                                  "maxItems": 0,
+                                  "additionalItems": false
+                                },
+                                "backgroundColor": {
+                                  "type": "string",
+                                  "enum": [
+                                    "rgba(255, 99, 132, 0.5)"
+                                  ]
+                                },
+                                "borderColor": {
+                                  "type": "string",
+                                  "enum": [
+                                    "rgba(255, 99, 132, 1)"
+                                  ]
+                                },
+                                "borderWidth": {
+                                  "type": "integer",
+                                  "enum": [
+                                    2
+                                  ]
+                                },
+                                "tension": {
+                                  "type": "number",
+                                  "enum": [
+                                    0.4
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "label",
+                                "data",
+                                "backgroundColor",
+                                "borderColor",
+                                "borderWidth",
+                                "tension"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Total Pendapatan (Rp)"
+                                  ]
+                                },
+                                "data": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "minItems": 0,
+                                  "maxItems": 0,
+                                  "additionalItems": false
+                                },
+                                "backgroundColor": {
+                                  "type": "string",
+                                  "enum": [
+                                    "rgba(153, 102, 255, 0.5)"
+                                  ]
+                                },
+                                "borderColor": {
+                                  "type": "string",
+                                  "enum": [
+                                    "rgba(153, 102, 255, 1)"
+                                  ]
+                                },
+                                "borderWidth": {
+                                  "type": "integer",
+                                  "enum": [
+                                    2
+                                  ]
+                                },
+                                "tension": {
+                                  "type": "number",
+                                  "enum": [
+                                    0.4
+                                  ]
+                                },
+                                "yAxisID": {
+                                  "type": "string",
+                                  "enum": [
+                                    "y1"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "label",
+                                "data",
+                                "backgroundColor",
+                                "borderColor",
+                                "borderWidth",
+                                "tension",
+                                "yAxisID"
+                              ]
+                            }
+                          ],
+                          "minItems": 2,
+                          "maxItems": 2,
+                          "additionalItems": false
+                        }
+                      },
+                      "required": [
+                        "labels",
+                        "datasets"
+                      ]
+                    },
+                    "summary": {
+                      "type": "object",
+                      "properties": {
+                        "total_transaksi": {
+                          "type": "string"
+                        },
+                        "total_pendapatan": {
+                          "type": "string"
+                        },
+                        "rata_rata_per_hari": {
+                          "type": "string"
+                        },
+                        "hari_terbaik": {
+                          "type": "object",
+                          "properties": {
+                            "tanggal": {
+                              "type": "string"
+                            },
+                            "pendapatan": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "tanggal",
+                            "pendapatan"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "total_transaksi",
+                        "total_pendapatan",
+                        "rata_rata_per_hari",
+                        "hari_terbaik"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "periode",
+                    "chart_data",
+                    "summary"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Bulan atau tahun tidak valid."
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Gagal mengambil statistik penjualan bulanan."
+                      ]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/statistik/mingguan": {
+      "get": {
+        "operationId": "laporan.statistikMingguan",
+        "summary": "Statistik penjualan minggu ini (per hari)\nData untuk Chart.js - Trend penjualan 7 hari terakhir",
+        "tags": [
+          "Laporan"
+        ],
+        "parameters": [
+          {
+            "name": "tanggal_akhir",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Statistik penjualan mingguan berhasil diambil."
+                      ]
+                    },
+                    "periode": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "weekly"
+                          ]
+                        },
+                        "tanggal_awal": {
+                          "type": "string"
+                        },
+                        "tanggal_akhir": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "tanggal_awal",
+                        "tanggal_akhir"
+                      ]
+                    },
+                    "chart_data": {
+                      "type": "object",
+                      "properties": {
+                        "labels": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "minItems": 0,
+                          "maxItems": 0,
+                          "additionalItems": false
+                        },
+                        "datasets": {
+                          "type": "array",
+                          "prefixItems": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Jumlah Transaksi"
+                                  ]
+                                },
+                                "data": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "minItems": 0,
+                                  "maxItems": 0,
+                                  "additionalItems": false
+                                },
+                                "backgroundColor": {
+                                  "type": "string",
+                                  "enum": [
+                                    "rgba(255, 206, 86, 0.5)"
+                                  ]
+                                },
+                                "borderColor": {
+                                  "type": "string",
+                                  "enum": [
+                                    "rgba(255, 206, 86, 1)"
+                                  ]
+                                },
+                                "borderWidth": {
+                                  "type": "integer",
+                                  "enum": [
+                                    2
+                                  ]
+                                },
+                                "tension": {
+                                  "type": "number",
+                                  "enum": [
+                                    0.4
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "label",
+                                "data",
+                                "backgroundColor",
+                                "borderColor",
+                                "borderWidth",
+                                "tension"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Total Pendapatan (Rp)"
+                                  ]
+                                },
+                                "data": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "minItems": 0,
+                                  "maxItems": 0,
+                                  "additionalItems": false
+                                },
+                                "backgroundColor": {
+                                  "type": "string",
+                                  "enum": [
+                                    "rgba(75, 192, 192, 0.5)"
+                                  ]
+                                },
+                                "borderColor": {
+                                  "type": "string",
+                                  "enum": [
+                                    "rgba(75, 192, 192, 1)"
+                                  ]
+                                },
+                                "borderWidth": {
+                                  "type": "integer",
+                                  "enum": [
+                                    2
+                                  ]
+                                },
+                                "tension": {
+                                  "type": "number",
+                                  "enum": [
+                                    0.4
+                                  ]
+                                },
+                                "yAxisID": {
+                                  "type": "string",
+                                  "enum": [
+                                    "y1"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "label",
+                                "data",
+                                "backgroundColor",
+                                "borderColor",
+                                "borderWidth",
+                                "tension",
+                                "yAxisID"
+                              ]
+                            }
+                          ],
+                          "minItems": 2,
+                          "maxItems": 2,
+                          "additionalItems": false
+                        }
+                      },
+                      "required": [
+                        "labels",
+                        "datasets"
+                      ]
+                    },
+                    "summary": {
+                      "type": "object",
+                      "properties": {
+                        "total_transaksi": {
+                          "type": "string"
+                        },
+                        "total_pendapatan": {
+                          "type": "string"
+                        },
+                        "rata_rata_per_hari": {
+                          "type": "string"
+                        },
+                        "hari_terbaik": {
+                          "type": "object",
+                          "properties": {
+                            "hari": {
+                              "type": "string"
+                            },
+                            "pendapatan": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "hari",
+                            "pendapatan"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "total_transaksi",
+                        "total_pendapatan",
+                        "rata_rata_per_hari",
+                        "hari_terbaik"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "periode",
+                    "chart_data",
+                    "summary"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Gagal mengambil statistik penjualan mingguan."
+                      ]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/login": {
       "post": {
         "operationId": "auth.login",

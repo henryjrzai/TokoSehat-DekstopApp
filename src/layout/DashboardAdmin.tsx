@@ -70,11 +70,11 @@ export default function DashboardAdmin({
                     <span>Satuan</span>
                   </Link>
                 </li>
-                <li className="sidebar-item">
-                  <a href="#" className="sidebar-link">
+                <li className={`sidebar-item ${isActive("/laporan")}`}>
+                  <Link to="/laporan" className="sidebar-link">
                     <i className="bi bi-file-earmark-bar-graph-fill"></i>
                     <span>Laporan</span>
-                  </a>
+                  </Link>
                 </li>
                 {user?.hak_akses === "admin" && (
                   <li className={`sidebar-item ${isActive("/user")}`}>

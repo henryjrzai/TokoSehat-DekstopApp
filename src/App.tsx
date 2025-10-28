@@ -17,6 +17,7 @@ import KategoriProdukList from "./pages/KategoriProduk/KategoriProdukList";
 import KategoriProdukForm from "./pages/KategoriProduk/KategoriProdukForm";
 import TransaksiList from "./pages/Transaksi/TransaksiList";
 import TransaksiDetail from "./pages/Transaksi/TransaksiDetail";
+import LaporanPage from "./pages/Laporan/LaporanPage";
 
 function AppContent() {
   const { isAuthenticated, loading, user } = useAuth();
@@ -87,6 +88,7 @@ function AppContent() {
                 path="/transaksi/detail/:id"
                 element={<TransaksiDetail />}
               />
+              <Route path="/laporan" element={<LaporanPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </>
           )}
