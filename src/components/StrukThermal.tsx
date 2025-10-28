@@ -35,7 +35,7 @@ export default function StrukThermal({ transaksi }: StrukThermalProps) {
         <div style={{ fontSize: "16px", fontWeight: "bold" }}>
           TOKO SEHAT KABANJAHE
         </div>
-        <div style={{ fontSize: "10px" }}>Jl. Contoh No. 123, Kabanjahe</div>
+        <div style={{ fontSize: "10px" }}>Jl. Jamin Ginting Gang Singkat Kabanjahe</div>
         <div style={{ fontSize: "10px" }}>Telp: 0812-3456-7890</div>
       </div>
 
