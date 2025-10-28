@@ -8,6 +8,9 @@ import ProdukList from "./pages/Produk/ProdukList";
 import ProdukForm from "./pages/Produk/ProdukForm";
 import SatuanList from "./pages/Satuan/SatuanList";
 import SatuanForm from "./pages/Satuan/SatuanForm";
+import UserList from "./pages/User/UserList";
+import UserForm from "./pages/User/UserForm";
+import ChangePassword from "./pages/User/ChangePassword";
 
 function AppContent() {
   const { isAuthenticated, loading } = useAuth();
@@ -38,6 +41,13 @@ function AppContent() {
           <Route path="/satuan" element={<SatuanList />} />
           <Route path="/satuan/tambah" element={<SatuanForm />} />
           <Route path="/satuan/edit/:id" element={<SatuanForm />} />
+          <Route path="/user" element={<UserList />} />
+          <Route path="/user/tambah" element={<UserForm />} />
+          <Route path="/user/edit/:id" element={<UserForm />} />
+          <Route
+            path="/user/change-password/:id"
+            element={<ChangePassword />}
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </DashboardAdmin>

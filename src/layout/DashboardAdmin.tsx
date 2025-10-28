@@ -70,11 +70,11 @@ export default function DashboardAdmin({
                     <span>Laporan</span>
                   </a>
                 </li>
-                <li className="sidebar-item">
-                  <a href="#" className="sidebar-link">
+                <li className={`sidebar-item ${isActive("/user")}`}>
+                  <Link to="/user" className="sidebar-link">
                     <i className="bi bi-people-fill"></i>
                     <span>Pengguna</span>
-                  </a>
+                  </Link>
                 </li>
                 <li className="sidebar-item mt-5">
                   <button
