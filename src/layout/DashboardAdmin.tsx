@@ -6,7 +6,7 @@ export default function DashboardAdmin({
 }: {
   children: React.ReactNode;
 }) {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const location = useLocation();
 
   const handleLogout = () => {
@@ -76,12 +76,14 @@ export default function DashboardAdmin({
                     <span>Laporan</span>
                   </a>
                 </li>
-                <li className={`sidebar-item ${isActive("/user")}`}>
-                  <Link to="/user" className="sidebar-link">
-                    <i className="bi bi-people-fill"></i>
-                    <span>Pengguna</span>
-                  </Link>
-                </li>
+                {user?.hak_akses === "admin" && (
+                  <li className={`sidebar-item ${isActive("/user")}`}>
+                    <Link to="/user" className="sidebar-link">
+                      <i className="bi bi-people-fill"></i>
+                      <span>Pengguna</span>
+                    </Link>
+                  </li>
+                )}
                 <li className="sidebar-item mt-5">
                   <button
                     className="btn btn-danger w-100"
