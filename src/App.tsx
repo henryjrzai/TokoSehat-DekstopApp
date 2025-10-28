@@ -1,8 +1,11 @@
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { useAuth } from "./hooks/useAuth";
 import Auth from "./layout/Auth";
 import DashboardAdmin from "./layout/DashboardAdmin";
 import Home from "./pages/Home";
+import ProdukList from "./pages/Produk/ProdukList";
+import ProdukForm from "./pages/Produk/ProdukForm";
 
 function AppContent() {
   const { isAuthenticated, loading } = useAuth();
@@ -18,16 +21,22 @@ function AppContent() {
     );
   }
 
+  if (!isAuthenticated) {
+    return <Auth />;
+  }
+
   return (
-    <div>
-      {isAuthenticated ? (
-        <DashboardAdmin>
-          <Home />
-        </DashboardAdmin>
-      ) : (
-        <Auth />
-      )}
-    </div>
+    <BrowserRouter>
+      <DashboardAdmin>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/produk" element={<ProdukList />} />
+          <Route path="/produk/tambah" element={<ProdukForm />} />
+          <Route path="/produk/edit/:id" element={<ProdukForm />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </DashboardAdmin>
+    </BrowserRouter>
   );
 }
 
