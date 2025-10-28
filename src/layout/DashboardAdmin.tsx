@@ -58,6 +58,12 @@ export default function DashboardAdmin({
                     <span>Produk</span>
                   </Link>
                 </li>
+                <li className={`sidebar-item ${isActive("/satuan")}`}>
+                  <Link to="/satuan" className="sidebar-link">
+                    <i className="bi bi-rulers"></i>
+                    <span>Satuan</span>
+                  </Link>
+                </li>
                 <li className="sidebar-item">
                   <a href="#" className="sidebar-link">
                     <i className="bi bi-file-earmark-bar-graph-fill"></i>

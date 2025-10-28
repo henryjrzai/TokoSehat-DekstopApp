@@ -6,6 +6,8 @@ import DashboardAdmin from "./layout/DashboardAdmin";
 import Home from "./pages/Home";
 import ProdukList from "./pages/Produk/ProdukList";
 import ProdukForm from "./pages/Produk/ProdukForm";
+import SatuanList from "./pages/Satuan/SatuanList";
+import SatuanForm from "./pages/Satuan/SatuanForm";
 
 function AppContent() {
   const { isAuthenticated, loading } = useAuth();
@@ -33,6 +35,9 @@ function AppContent() {
           <Route path="/produk" element={<ProdukList />} />
           <Route path="/produk/tambah" element={<ProdukForm />} />
           <Route path="/produk/edit/:id" element={<ProdukForm />} />
+          <Route path="/satuan" element={<SatuanList />} />
+          <Route path="/satuan/tambah" element={<SatuanForm />} />
+          <Route path="/satuan/edit/:id" element={<SatuanForm />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </DashboardAdmin>
