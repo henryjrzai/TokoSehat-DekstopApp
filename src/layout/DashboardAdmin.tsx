@@ -58,6 +58,12 @@ export default function DashboardAdmin({
                     <span>Produk</span>
                   </Link>
                 </li>
+                <li className={`sidebar-item ${isActive("/kategori-produk")}`}>
+                  <Link to="/kategori-produk" className="sidebar-link">
+                    <i className="bi bi-tags-fill"></i>
+                    <span>Kategori Produk</span>
+                  </Link>
+                </li>
                 <li className={`sidebar-item ${isActive("/satuan")}`}>
                   <Link to="/satuan" className="sidebar-link">
                     <i className="bi bi-rulers"></i>
