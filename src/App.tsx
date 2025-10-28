@@ -13,6 +13,8 @@ import UserForm from "./pages/User/UserForm";
 import ChangePassword from "./pages/User/ChangePassword";
 import KategoriProdukList from "./pages/KategoriProduk/KategoriProdukList";
 import KategoriProdukForm from "./pages/KategoriProduk/KategoriProdukForm";
+import TransaksiList from "./pages/Transaksi/TransaksiList";
+import TransaksiDetail from "./pages/Transaksi/TransaksiDetail";
 
 function AppContent() {
   const { isAuthenticated, loading } = useAuth();
@@ -59,6 +61,8 @@ function AppContent() {
             path="/user/change-password/:id"
             element={<ChangePassword />}
           />
+          <Route path="/transaksi" element={<TransaksiList />} />
+          <Route path="/transaksi/detail/:id" element={<TransaksiDetail />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </DashboardAdmin>

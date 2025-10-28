@@ -46,11 +46,11 @@ export default function DashboardAdmin({
                     <span>Dashboard</span>
                   </Link>
                 </li>
-                <li className="sidebar-item">
-                  <a href="#" className="sidebar-link">
+                <li className={`sidebar-item ${isActive("/transaksi")}`}>
+                  <Link to="/transaksi" className="sidebar-link">
                     <i className="bi bi-cart-fill"></i>
                     <span>Transaksi</span>
-                  </a>
+                  </Link>
                 </li>
                 <li className={`sidebar-item ${isActive("/produk")}`}>
                   <Link to="/produk" className="sidebar-link">
