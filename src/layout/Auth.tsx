@@ -27,9 +27,9 @@ export default function Auth() {
       // Login berhasil, akan otomatis redirect karena state berubah
     } catch (err) {
       setLoading(false);
-      setError(
-        err instanceof Error ? err.message : "Login gagal. Silakan coba lagi."
-      );
+      const errorMessage =
+        err instanceof Error ? err.message : "Login gagal. Silakan coba lagi.";
+      setError(errorMessage);
     }
   };
 

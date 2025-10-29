@@ -1,4 +1,5 @@
 import axiosInstance from "../config/axios";
+import { AxiosError } from "axios";
 
 // Interface untuk request login
 export interface LoginRequest {
@@ -24,6 +25,12 @@ export interface LoginResponse {
   token: string;
 }
 
+// Interface untuk error response dari API
+export interface ErrorResponse {
+  status: boolean;
+  message: string;
+}
+
 // Service untuk login
 export const login = async (
   credentials: LoginRequest
@@ -45,20 +52,21 @@ export const login = async (
     }
 
     return response.data;
-  } catch (error: unknown) {
-    // Handle error
-    if (error instanceof Error) {
-      const axiosError = error as {
-        response?: { data?: { message?: string } };
-        request?: unknown;
-      };
-      if (axiosError.response) {
-        throw new Error(axiosError.response.data?.message || "Login gagal");
-      } else if (axiosError.request) {
+  } catch (error) {
+    // Handle error dari axios
+    if (error instanceof AxiosError) {
+      if (error.response) {
+        // Server merespons dengan status code di luar 2xx
+        const errorData = error.response.data as ErrorResponse;
+        const errorMessage = errorData?.message || "Login gagal";
+        throw new Error(errorMessage);
+      } else if (error.request) {
+        // Request dibuat tapi tidak ada response
         throw new Error("Tidak dapat terhubung ke server");
       }
     }
-    throw new Error("Terjadi kesalahan");
+    // Error lain yang terjadi
+    throw new Error("Terjadi kesalahan yang tidak diketahui");
   }
 };
 

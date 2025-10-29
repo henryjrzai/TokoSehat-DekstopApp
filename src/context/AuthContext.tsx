@@ -53,7 +53,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      throw error;
+      throw error; // Penting: re-throw error agar bisa ditangkap di component
     }
   };
 
