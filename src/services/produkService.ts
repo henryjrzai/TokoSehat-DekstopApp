@@ -7,6 +7,7 @@ export interface Produk {
   kategori_id: number;
   kode_produk: string;
   nama_produk: string;
+  harga_modal: number;
   harga: number;
   stok: number;
   created_at?: string;
@@ -30,6 +31,7 @@ export interface ProdukRequest {
   kategori_id: number;
   kode_produk: string;
   nama_produk: string;
+  harga_modal: number;
   harga: number;
   stok: number;
 }
@@ -104,6 +106,8 @@ export const updateProduk = async (
       `/produk/${id}`,
       produk
     );
+    console.log("Produk data:", produk);
+    console.log("Produk updated:", response.data.data);
     return response.data.data;
   } catch (error: unknown) {
     if (error instanceof Error) {

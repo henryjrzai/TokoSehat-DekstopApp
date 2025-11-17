@@ -242,7 +242,8 @@ export default function ProdukList() {
                       <th>Nama Produk</th>
                       <th>Kategori</th>
                       <th>Satuan</th>
-                      <th>Harga</th>
+                      <th>Harga Modal</th>
+                      <th>Harga Jual</th>
                       <th>Stok</th>
                       <th className="text-center">Aksi</th>
                     </tr>
@@ -278,6 +279,7 @@ export default function ProdukList() {
                               <span className="text-muted">-</span>
                             )}
                           </td>
+                          <td>Rp {produk.harga_modal?.toLocaleString("id-ID") || "-"}</td>
                           <td>Rp {produk.harga.toLocaleString("id-ID")}</td>
                           <td>
                             <span

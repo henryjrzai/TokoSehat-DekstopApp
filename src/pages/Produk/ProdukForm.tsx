@@ -22,6 +22,7 @@ export default function ProdukForm() {
     kategori_id: 0,
     kode_produk: "",
     nama_produk: "",
+    harga_modal: 0,
     harga: 0,
     stok: 0,
   });
@@ -59,10 +60,11 @@ export default function ProdukForm() {
       setLoadingData(true);
       const data = await getProdukById(produkId);
       setFormData({
-        satuan_id: data.satuan_id,
-        kategori_id: data.kategori_id,
+        satuan_id: data.satuan?.id ?? 0,
+        kategori_id: data.kategori?.id ?? 0,
         kode_produk: data.kode_produk,
         nama_produk: data.nama_produk,
+        harga_modal: data.harga_modal,
         harga: data.harga,
         stok: data.stok,
       });
@@ -82,6 +84,7 @@ export default function ProdukForm() {
       [name]:
         name === "satuan_id" ||
         name === "kategori_id" ||
+        name === "harga_modal" ||
         name === "harga" ||
         name === "stok"
           ? parseInt(value) || 0
@@ -100,6 +103,10 @@ export default function ProdukForm() {
     }
     if (formData.kategori_id === 0 || formData.satuan_id === 0) {
       setError("Kategori dan satuan harus dipilih");
+      return;
+    }
+    if (formData.harga_modal <= 0) {
+      setError("Harga modal harus lebih dari 0");
       return;
     }
     if (formData.harga <= 0) {
@@ -261,6 +268,27 @@ export default function ProdukForm() {
                           </option>
                         ))}
                       </select>
+                    </div>
+                  </div>
+
+                  <div className="col-md-6">
+                    <div className="form-group mb-3">
+                      <label className="form-label">
+                        Harga Modal <span className="text-danger">*</span>
+                      </label>
+                      <div className="input-group">
+                        <span className="input-group-text">Rp</span>
+                        <input
+                          type="number"
+                          className="form-control"
+                          name="harga_modal"
+                          value={formData.harga_modal}
+                          onChange={handleChange}
+                          placeholder="0"
+                          min="0"
+                          required
+                        />
+                      </div>
                     </div>
                   </div>
 
