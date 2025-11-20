@@ -24,6 +24,7 @@ export default function TransaksiDetail() {
     try {
       setLoading(true);
       const data = await getTransaksiById(transaksiId);
+      console.log(data)
       setTransaksi(data);
       setError("");
     } catch (err) {
@@ -257,7 +258,7 @@ export default function TransaksiDetail() {
                             </td>
                             <td>{item.produk?.nama_produk || "-"}</td>
                             <td className="text-center">
-                              <strong>{item.jumlah}</strong>
+                              <strong>{item.jumlah}</strong> {item.produk?.satuan}
                             </td>
                             <td className="text-end">
                               {formatRupiah(item.produk?.harga || 0)}

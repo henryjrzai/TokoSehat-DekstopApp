@@ -9,6 +9,7 @@ export interface TransaksiItem {
     kode_produk: string;
     nama_produk: string;
     harga: number;
+    satuan: string;
   };
   jumlah: number;
   harga_satuan: number;
