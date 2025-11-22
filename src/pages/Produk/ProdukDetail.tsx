@@ -1,30 +1,42 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getProdukById, type Produk } from "../../services/produkService";
+import {
+  getProdukById,
+  getProdukHistory,
+  type Produk,
+  type ProdukHistory,
+} from "../../services/produkService";
 
 export default function ProdukDetail() {
   const { id } = useParams<{ id: string }>();
   const [produk, setProduk] = useState<Produk | null>(null);
+  const [history, setHistory] = useState<ProdukHistory | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
-      const fetchProduk = async () => {
+      const fetchProdukData = async () => {
         try {
           setLoading(true);
-          const data = await getProdukById(Number(id));
-          setProduk(data);
+          const [produkData, historyData] = await Promise.all([
+            getProdukById(Number(id)),
+            getProdukHistory(Number(id)),
+          ]);
+          setProduk(produkData);
+          setHistory(historyData);
           setError(null);
         } catch (err) {
           setError(
-            err instanceof Error ? err.message : "Gagal memuat detail produk"
+            err instanceof Error
+              ? err.message
+              : "Gagal memuat detail dan riwayat produk"
           );
         } finally {
           setLoading(false);
         }
       };
-      fetchProduk();
+      fetchProdukData();
     }
   }, [id]);
 
@@ -142,6 +154,45 @@ export default function ProdukDetail() {
                 <i className="bi bi-arrow-left me-2"></i> Kembali ke Daftar Produk
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="card">
+          <div className="card-header">
+            <h5 className="card-title">Riwayat Stok Produk</h5>
+          </div>
+          <div className="card-body">
+            {history && history.history.length > 0 ? (
+              <div className="table-responsive">
+                <table className="table table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Stok Masuk</th>
+                      <th>Distributor</th>
+                      <th>Tanggal Masuk</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {history.history.map((item, index) => (
+                      <tr key={item.id}>
+                        <td>{index + 1}</td>
+                        <td>{item.stok}</td>
+                        <td>{item.distributor}</td>
+                        <td>{item.tanggal_masuk}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="alert alert-light-info">
+                <h4 className="alert-heading">Informasi</h4>
+                <p>Belum ada riwayat stok untuk produk ini.</p>
+              </div>
+            )}
           </div>
         </div>
       </section>

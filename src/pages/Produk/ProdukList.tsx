@@ -80,12 +80,12 @@ export default function ProdukList() {
     }
   };
 
-  const openStockModal = (produk: Produk) => {
-    setSelectedProduk(produk);
-    setStockQuantity(0);
-    setStockOperation("add");
-    setShowStockModal(true);
-  };
+  // const openStockModal = (produk: Produk) => {
+  //   setSelectedProduk(produk);
+  //   setStockQuantity(0);
+  //   setStockOperation("add");
+  //   setShowStockModal(true);
+  // };
 
   const closeStockModal = () => {
     setShowStockModal(false);

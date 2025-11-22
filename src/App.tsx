@@ -48,6 +48,7 @@ function AppContent() {
         <Routes>
           {/* Routes for Kasir */}
           {isKasir ? (
+            <>
               <Route path="/produk" element={<ProdukList />} />
               <Route path="/produk/detail/:id" element={<ProdukDetail />} />
               <Route path="/transaksi" element={<TransaksiList />} />
