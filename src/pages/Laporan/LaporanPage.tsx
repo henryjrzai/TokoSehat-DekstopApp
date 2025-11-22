@@ -297,7 +297,7 @@ const LaporanPage = () => {
                               <td><code>{item.kode_produk}</code></td>
                               <td>{item.stok}</td>
                               <td>{item.satuan.nama_satuan}</td>
-                              <td>{item.distributor}</td>
+                              <td>{item.distributor || "-"}</td>
                               <td>{new Date(item.tanggal_masuk).toLocaleString("id-ID")}</td>
                             </tr>
                           ))
