@@ -296,13 +296,13 @@ export default function ProdukList() {
                           </td>
                           <td>
                             <div className="btn-group" role="group">
-                              <button
+                              <Link
+                                to={`/produk/detail/${produk.id}`}
                                 className="btn btn-sm btn-info"
-                                title="Update Stok"
-                                onClick={() => openStockModal(produk)}
+                                title="Detail Produk"
                               >
-                                <i className="bi bi-box-seam"></i>
-                              </button>
+                                <i className="bi bi-eye"></i>
+                              </Link>
                               <Link
                                 to={`/produk/edit/${produk.id}`}
                                 className="btn btn-sm btn-warning"

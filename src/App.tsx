@@ -18,6 +18,7 @@ import KategoriProdukForm from "./pages/KategoriProduk/KategoriProdukForm";
 import TransaksiList from "./pages/Transaksi/TransaksiList";
 import TransaksiDetail from "./pages/Transaksi/TransaksiDetail";
 import LaporanPage from "./pages/Laporan/LaporanPage";
+import ProdukDetail from "./pages/Produk/ProdukDetail";
 
 function AppContent() {
   const { isAuthenticated, loading, user } = useAuth();
@@ -47,9 +48,8 @@ function AppContent() {
         <Routes>
           {/* Routes for Kasir */}
           {isKasir ? (
-            <>
-              <Route path="/" element={<KasirPage />} />
               <Route path="/produk" element={<ProdukList />} />
+              <Route path="/produk/detail/:id" element={<ProdukDetail />} />
               <Route path="/transaksi" element={<TransaksiList />} />
               <Route
                 path="/transaksi/detail/:id"
@@ -62,6 +62,7 @@ function AppContent() {
             <>
               <Route path="/" element={<Home />} />
               <Route path="/produk" element={<ProdukList />} />
+              <Route path="/produk/detail/:id" element={<ProdukDetail />} />
               <Route path="/produk/tambah" element={<ProdukForm />} />
               <Route path="/produk/edit/:id" element={<ProdukForm />} />
               <Route path="/satuan" element={<SatuanList />} />
