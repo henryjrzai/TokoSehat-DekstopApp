@@ -247,3 +247,36 @@ export const addProdukStock = async (
     throw new Error("Terjadi kesalahan");
   }
 };
+
+// Interface untuk semua riwayat stok produk
+export interface AllProdukHistoryItem {
+  id: number;
+  produk_id: number;
+  kode_produk: string;
+  nama_produk: string;
+  satuan: {
+    id: number;
+    kode_satuan: string;
+    nama_satuan: string;
+  };
+  stok: number;
+  distributor: string;
+  tanggal_masuk: string;
+}
+
+// Get all product stock history
+export const getAllProdukHistory = async (): Promise<AllProdukHistoryItem[]> => {
+  try {
+    const response = await axiosInstance.get<
+      ApiResponse<AllProdukHistoryItem[]>
+    >("/produk/history");
+    return response.data.data;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw new Error(
+        error.message || "Gagal mengambil semua riwayat stok produk"
+      );
+    }
+    throw new Error("Terjadi kesalahan");
+  }
+};
