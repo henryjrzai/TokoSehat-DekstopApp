@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   getProdukById,
   getProdukHistory,
+  addProdukStock,
   type Produk,
   type ProdukHistory,
+  type AddStokRequest,
 } from "../../services/produkService";
 
 export default function ProdukDetail() {
@@ -14,31 +16,88 @@ export default function ProdukDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  // State for Add Stock Modal
+  const [showModal, setShowModal] = useState(false);
+  const [quantity, setQuantity] = useState<number | string>("");
+  const [distributor, setDistributor] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // State for notifications
+  const [notification, setNotification] = useState<{
+    type: "success" | "danger";
+    message: string;
+  } | null>(null);
+
+  const fetchProdukData = useCallback(async () => {
     if (id) {
-      const fetchProdukData = async () => {
-        try {
-          setLoading(true);
-          const [produkData, historyData] = await Promise.all([
-            getProdukById(Number(id)),
-            getProdukHistory(Number(id)),
-          ]);
-          setProduk(produkData);
-          setHistory(historyData);
-          setError(null);
-        } catch (err) {
-          setError(
-            err instanceof Error
-              ? err.message
-              : "Gagal memuat detail dan riwayat produk"
-          );
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchProdukData();
+      try {
+        // Don't set loading to true on refetch
+        // setLoading(true);
+        const [produkData, historyData] = await Promise.all([
+          getProdukById(Number(id)),
+          getProdukHistory(Number(id)),
+        ]);
+        setProduk(produkData);
+        setHistory(historyData);
+        setError(null);
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Gagal memuat detail dan riwayat produk"
+        );
+      } finally {
+        setLoading(false);
+      }
     }
   }, [id]);
+
+  useEffect(() => {
+    setLoading(true);
+    fetchProdukData();
+  }, [fetchProdukData]);
+
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setQuantity("");
+    setDistributor("");
+    setSubmitError(null);
+  };
+
+  const handleStockSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!id || !quantity || Number(quantity) <= 0) {
+      setSubmitError("Kuantitas harus diisi dan lebih besar dari 0.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+    setNotification(null);
+
+    try {
+      const stockData: AddStokRequest = {
+        quantity: Number(quantity),
+        distributor: distributor || undefined,
+      };
+      await addProdukStock(Number(id), stockData);
+
+      handleCloseModal();
+      setNotification({
+        type: "success",
+        message: "Stok produk berhasil ditambahkan.",
+      });
+      await fetchProdukData(); // Refetch data
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Gagal menambah stok.";
+      setSubmitError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -103,6 +162,21 @@ export default function ProdukDetail() {
         </div>
       </div>
 
+      {notification && (
+        <div
+          className={`alert alert-${notification.type} alert-dismissible fade show`}
+          role="alert"
+        >
+          {notification.message}
+          <button
+            type="button"
+            className="btn-close"
+            onClick={() => setNotification(null)}
+            aria-label="Close"
+          ></button>
+        </div>
+      )}
+
       <section className="section">
         <div className="card">
           <div className="card-header">
@@ -149,10 +223,13 @@ export default function ProdukDetail() {
                 </p>
               </div>
             </div>
-            <div className="mt-3">
+            <div className="mt-3 d-flex gap-2">
               <Link to="/produk" className="btn btn-secondary">
-                <i className="bi bi-arrow-left me-2"></i> Kembali ke Daftar Produk
+                <i className="bi bi-arrow-left me-2"></i> Kembali
               </Link>
+              <button className="btn btn-primary" onClick={handleShowModal}>
+                <i className="bi bi-plus-circle me-2"></i> Tambah Stok
+              </button>
             </div>
           </div>
         </div>
@@ -180,7 +257,7 @@ export default function ProdukDetail() {
                       <tr key={item.id}>
                         <td>{index + 1}</td>
                         <td>{item.stok}</td>
-                        <td>{item.distributor}</td>
+                        <td>{item.distributor || "-"}</td>
                         <td>{item.tanggal_masuk}</td>
                       </tr>
                     ))}
@@ -196,6 +273,90 @@ export default function ProdukDetail() {
           </div>
         </div>
       </section>
+
+      {/* Add Stock Modal */}
+      <div
+        className={`modal fade ${showModal ? "show d-block" : ""}`}
+        tabIndex={-1}
+        role="dialog"
+        style={{
+          backgroundColor: showModal ? "rgba(0,0,0,0.5)" : "transparent",
+        }}
+      >
+        <div className="modal-dialog modal-dialog-centered" role="document">
+          <div className="modal-content">
+            <form onSubmit={handleStockSubmit}>
+              <div className="modal-header">
+                <h5 className="modal-title">Tambah Stok Produk</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={handleCloseModal}
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="modal-body">
+                {submitError && (
+                  <div className="alert alert-danger">{submitError}</div>
+                )}
+                <div className="mb-3">
+                  <label htmlFor="quantity" className="form-label">
+                    Jumlah Stok Masuk <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    id="quantity"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    required
+                    min="1"
+                  />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="distributor" className="form-label">
+                    Nama Distributor (Opsional)
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="distributor"
+                    value={distributor}
+                    onChange={(e) => setDistributor(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleCloseModal}
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span
+                        className="spinner-border spinner-border-sm"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>{" "}
+                      Menyimpan...
+                    </>
+                  ) : (
+                    "Simpan"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -202,3 +202,48 @@ export const getProdukHistory = async (id: number): Promise<ProdukHistory> => {
     throw new Error("Terjadi kesalahan");
   }
 };
+
+// Interface untuk menambah stok
+export interface AddStokRequest {
+  quantity: number;
+  distributor?: string;
+}
+
+export interface AddStokResponse {
+  id: string;
+  kode_produk: string;
+  nama_produk: string;
+  harga: string;
+  stok_sebelumnya: string;
+  stok_sekarang: string;
+  distributor: string;
+  perubahan: string;
+  satuan: {
+    id: string;
+    kode_satuan: string;
+    nama_satuan: string;
+  };
+  kategori: {
+    id: string;
+    nama_kategori: string;
+  };
+}
+
+// Add product stock
+export const addProdukStock = async (
+  id: number,
+  data: AddStokRequest
+): Promise<AddStokResponse> => {
+  try {
+    const response = await axiosInstance.patch<ApiResponse<AddStokResponse>>(
+      `/produk/${id}/stock`,
+      data
+    );
+    return response.data.data;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw new Error(error.message || "Gagal menambah stok produk");
+    }
+    throw new Error("Terjadi kesalahan");
+  }
+};
