@@ -98,7 +98,34 @@ const LaporanPage = () => {
 
   // Handler untuk Export Laporan Bulanan PDF
   const handleExportBulananPDF = async () => {
-    // ... (existing code is fine)
+    if (!bulan || !tahun) {
+      alert("Silakan pilih bulan dan tahun!");
+      return;
+    }
+
+    setLoadingBulanan(true);
+    try {
+      const params: LaporanBulananRequest = {
+        bulan,
+        tahun,
+      };
+
+      const blob = await exportLaporanBulananPDF(params);
+      const namaBulan = getNamaBulan(bulan);
+      const filename = `Laporan_Bulanan_${namaBulan}_${tahun}.pdf`;
+      downloadPDF(blob, filename);
+
+      alert("Laporan bulanan berhasil diunduh!");
+    } catch (error) {
+      console.error("Error exporting bulanan PDF:", error);
+      const err = error as { response?: { data?: { message?: string } } };
+      alert(
+        err.response?.data?.message ||
+          "Gagal mengunduh laporan bulanan. Silakan coba lagi."
+      );
+    } finally {
+      setLoadingBulanan(false);
+    }
   };
 
   return (
@@ -115,8 +142,72 @@ const LaporanPage = () => {
       </div>
 
       <section className="section">
-        {/* Laporan Bulanan Card remains the same */}
-        {/* ... */}
+        <div className="row">
+          {/* Laporan Bulanan */}
+          <div className="col-md-6">
+            <div className="card">
+              <div className="card-header">
+                <h4 className="card-title">Laporan Bulanan</h4>
+              </div>
+              <div className="card-body">
+                <div className="mb-3">
+                  <label className="form-label">Bulan</label>
+                  <select
+                    className="form-select"
+                    value={bulan}
+                    onChange={(e) => setBulan(Number(e.target.value))}
+                  >
+                    <option value={1}>Januari</option>
+                    <option value={2}>Februari</option>
+                    <option value={3}>Maret</option>
+                    <option value={4}>April</option>
+                    <option value={5}>Mei</option>
+                    <option value={6}>Juni</option>
+                    <option value={7}>Juli</option>
+                    <option value={8}>Agustus</option>
+                    <option value={9}>September</option>
+                    <option value={10}>Oktober</option>
+                    <option value={11}>November</option>
+                    <option value={12}>Desember</option>
+                  </select>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Tahun</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={tahun}
+                    onChange={(e) => setTahun(Number(e.target.value))}
+                    min={2020}
+                    max={2099}
+                  />
+                </div>
+
+                <button
+                  className="btn btn-success w-100"
+                  onClick={handleExportBulananPDF}
+                  disabled={loadingBulanan || !bulan || !tahun}
+                >
+                  {loadingBulanan ? (
+                    <>
+                      <span
+                        className="spinner-border spinner-border-sm me-2"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                      Mengunduh...
+                    </>
+                  ) : (
+                    <>
+                      <i className="bi bi-file-pdf me-2"></i>
+                      Export PDF Bulanan
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Riwayat Produk Masuk */}
         <div className="row mt-4">
