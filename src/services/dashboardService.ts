@@ -145,3 +145,18 @@ export const getWeeklyStats = async (
     throw error;
   }
 };
+
+/**
+ * Get sales trend (last 30 days)
+ */
+export const getTrendPenjualan = async (): Promise<ComparisonChartData> => {
+  try {
+    const response = await axiosInstance.get<StatistikResponse>(
+      "/statistik/trend-penjualan"
+    );
+    return response.data.chart_data;
+  } catch (error) {
+    console.error("Error fetching sales trend:", error);
+    throw error;
+  }
+};

@@ -11,6 +11,7 @@ export default function Home() {
     yearlyData,
     monthlyData,
     weeklyData,
+    trendData,
     loading,
     error,
     refreshDashboard,
@@ -236,6 +237,24 @@ export default function Home() {
 
             {/* Charts */}
             <div className="row">
+              {/* Trend Chart */}
+              <div className="col-12">
+                <div className="card">
+                  <div className="card-header">
+                    <h4>Trend Penjualan (30 Hari Terakhir)</h4>
+                  </div>
+                  <div className="card-body">
+                    {trendData && (
+                      <ApexChartComponent
+                        data={trendData}
+                        type="line"
+                        height={350}
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+
               {/* Comparison Chart */}
               <div className="col-12">
                 <div className="card">

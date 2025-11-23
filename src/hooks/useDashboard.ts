@@ -5,6 +5,7 @@ import {
   getYearlyStats,
   getMonthlyStats,
   getWeeklyStats,
+  getTrendPenjualan,
   DashboardStats,
   ComparisonChartData,
 } from "../services/dashboardService";
@@ -24,6 +25,7 @@ export const useDashboard = () => {
   const [weeklyData, setWeeklyData] = useState<ComparisonChartData | null>(
     null
   );
+  const [trendData, setTrendData] = useState<ComparisonChartData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,13 +38,14 @@ export const useDashboard = () => {
       setLoading(true);
       setError(null);
 
-      const [dashboard, comparison, yearly, monthly, weekly] =
+      const [dashboard, comparison, yearly, monthly, weekly, trend] =
         await Promise.all([
           getDashboardStats(),
           getComparisonStats(),
           getYearlyStats(),
           getMonthlyStats(),
           getWeeklyStats(),
+          getTrendPenjualan(),
         ]);
 
       setDashboardStats(dashboard);
@@ -50,6 +53,7 @@ export const useDashboard = () => {
       setYearlyData(yearly);
       setMonthlyData(monthly);
       setWeeklyData(weekly);
+      setTrendData(trend);
     } catch (err) {
       setError("Gagal memuat data dashboard");
       console.error("Error loading dashboard:", err);
@@ -68,6 +72,7 @@ export const useDashboard = () => {
     yearlyData,
     monthlyData,
     weeklyData,
+    trendData,
     loading,
     error,
     refreshDashboard,
