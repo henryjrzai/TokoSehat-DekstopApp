@@ -26,16 +26,53 @@ export const ApexChartComponent: React.FC<ApexChartComponentProps> = ({
   useEffect(() => {
     if (!chartRef.current || !window.ApexCharts || !data) return;
 
-    // Destroy previous chart instance
     if (chartInstanceRef.current) {
       chartInstanceRef.current.destroy();
     }
 
-    // Convert Chart.js data format to ApexCharts format
     const series = data.datasets.map((dataset) => ({
       name: dataset.label,
       data: dataset.data,
     }));
+
+    // Dynamically create y-axis options based on dataset labels
+    const yAxes = data.datasets.map((dataset, index) => {
+      const isPendapatan = dataset.label.toLowerCase().includes("pendapatan");
+
+      return {
+        seriesName: dataset.label,
+        opposite: index > 0, // Only the first axis is on the left
+        title: {
+          text: dataset.label,
+        },
+        labels: {
+          formatter: function (value: number) {
+            if (isPendapatan) {
+              return "Rp " + Math.round(value).toLocaleString("id-ID");
+            }
+            return Math.round(value);
+          },
+        },
+      };
+    });
+
+    // Dynamically create tooltip formatters
+    const tooltipY = data.datasets.map((dataset) => {
+      const isPendapatan = dataset.label.toLowerCase().includes("pendapatan");
+      const isTransaksi = dataset.label.toLowerCase().includes("transaksi");
+
+      return {
+        formatter: function (val: number) {
+          if (isPendapatan) {
+            return "Rp " + val.toLocaleString("id-ID");
+          }
+          if (isTransaksi) {
+            return val + " transaksi";
+          }
+          return val;
+        },
+      };
+    });
 
     const options = {
       series: series,
@@ -75,29 +112,7 @@ export const ApexChartComponent: React.FC<ApexChartComponentProps> = ({
           },
         },
       },
-      yaxis: [
-        {
-          title: {
-            text: data.datasets[0]?.label || "",
-          },
-          labels: {
-            formatter: function (value: number) {
-              return Math.round(value).toString();
-            },
-          },
-        },
-        {
-          opposite: true,
-          title: {
-            text: data.datasets[1]?.label || "",
-          },
-          labels: {
-            formatter: function (value: number) {
-              return "Rp " + value.toLocaleString("id-ID");
-            },
-          },
-        },
-      ],
+      yaxis: yAxes,
       legend: {
         position: "top",
         horizontalAlign: "left",
@@ -106,18 +121,7 @@ export const ApexChartComponent: React.FC<ApexChartComponentProps> = ({
         opacity: type === "area" ? 0.3 : 1,
       },
       tooltip: {
-        y: [
-          {
-            formatter: function (val: number) {
-              return val + " transaksi";
-            },
-          },
-          {
-            formatter: function (val: number) {
-              return "Rp " + val.toLocaleString("id-ID");
-            },
-          },
-        ],
+        y: tooltipY.length === 1 ? tooltipY[0] : tooltipY,
       },
       title: {
         text: title,
@@ -130,7 +134,6 @@ export const ApexChartComponent: React.FC<ApexChartComponentProps> = ({
       colors: ["#435ebe", "#55c6a9"],
     };
 
-    // Create new chart instance
     chartInstanceRef.current = new window.ApexCharts(chartRef.current, options);
     chartInstanceRef.current.render();
 

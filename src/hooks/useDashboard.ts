@@ -25,7 +25,11 @@ export const useDashboard = () => {
   const [weeklyData, setWeeklyData] = useState<ComparisonChartData | null>(
     null
   );
-  const [trendData, setTrendData] = useState<ComparisonChartData | null>(null);
+  const [trendTransaksiData, setTrendTransaksiData] =
+    useState<ComparisonChartData | null>(null);
+  const [trendPendapatanData, setTrendPendapatanData] =
+    useState<ComparisonChartData | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,7 +57,30 @@ export const useDashboard = () => {
       setYearlyData(yearly);
       setMonthlyData(monthly);
       setWeeklyData(weekly);
-      setTrendData(trend);
+
+      // Memisahkan trendData menjadi dua
+      if (trend && trend.datasets) {
+        const transaksiDataset = trend.datasets.find((ds) =>
+          ds.label.toLowerCase().includes("transaksi")
+        );
+        const pendapatanDataset = trend.datasets.find((ds) =>
+          ds.label.toLowerCase().includes("pendapatan")
+        );
+
+        if (transaksiDataset) {
+          setTrendTransaksiData({
+            labels: trend.labels,
+            datasets: [transaksiDataset],
+          });
+        }
+
+        if (pendapatanDataset) {
+          setTrendPendapatanData({
+            labels: trend.labels,
+            datasets: [pendapatanDataset],
+          });
+        }
+      }
     } catch (err) {
       setError("Gagal memuat data dashboard");
       console.error("Error loading dashboard:", err);
@@ -72,7 +99,8 @@ export const useDashboard = () => {
     yearlyData,
     monthlyData,
     weeklyData,
-    trendData,
+    trendTransaksiData,
+    trendPendapatanData,
     loading,
     error,
     refreshDashboard,

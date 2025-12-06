@@ -11,7 +11,8 @@ export default function Home() {
     yearlyData,
     monthlyData,
     weeklyData,
-    trendData,
+    trendTransaksiData,
+    trendPendapatanData,
     loading,
     error,
     refreshDashboard,
@@ -237,16 +238,16 @@ export default function Home() {
 
             {/* Charts */}
             <div className="row">
-              {/* Trend Chart */}
-              <div className="col-12">
+              {/* Trend Transaksi Chart */}
+              <div className="col-12 col-lg-6">
                 <div className="card">
                   <div className="card-header">
-                    <h4>Trend Penjualan (30 Hari Terakhir)</h4>
+                    <h4>Trend Jumlah Transaksi (30 Hari Terakhir)</h4>
                   </div>
                   <div className="card-body">
-                    {trendData && (
+                    {trendTransaksiData && (
                       <ApexChartComponent
-                        data={trendData}
+                        data={trendTransaksiData}
                         type="line"
                         height={350}
                       />
@@ -255,6 +256,26 @@ export default function Home() {
                 </div>
               </div>
 
+              {/* Trend Pendapatan Chart */}
+              <div className="col-12 col-lg-6">
+                <div className="card">
+                  <div className="card-header">
+                    <h4>Trend Total Pendapatan (30 Hari Terakhir)</h4>
+                  </div>
+                  <div className="card-body">
+                    {trendPendapatanData && (
+                      <ApexChartComponent
+                        data={trendPendapatanData}
+                        type="line"
+                        height={350}
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="row">
               {/* Comparison Chart */}
               <div className="col-12">
                 <div className="card">
