@@ -1,33 +1,33 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import {
   getAllTransaksi,
   deleteTransaksi,
   type Transaksi,
+  type PaginationData,
 } from "../../services/transaksiService";
 
 export default function TransaksiList() {
   const [transaksiList, setTransaksiList] = useState<Transaksi[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchNoNota, setSearchNoNota] = useState("");
   const [filterDate, setFilterDate] = useState("");
+  const [pagination, setPagination] = useState<PaginationData | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
 
-  useEffect(() => {
-    loadTransaksi();
-  }, []);
-
-  const loadTransaksi = async () => {
+  const loadTransaksi = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await getAllTransaksi();
-      // Sort by newest first
-      const sortedData = data.sort(
-        (a, b) =>
-          new Date(b.created_at || b.tgl_transaksi).getTime() -
-          new Date(a.created_at || a.tgl_transaksi).getTime()
-      );
-      setTransaksiList(sortedData);
+      const response = await getAllTransaksi({
+        date: filterDate || undefined,
+        noNota: searchNoNota || undefined,
+        per_page: perPage,
+        page: currentPage,
+      });
+      setTransaksiList(response.data);
+      setPagination(response.pagination);
       setError("");
     } catch (err) {
       setError("Gagal memuat data transaksi");
@@ -35,7 +35,11 @@ export default function TransaksiList() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, perPage, filterDate, searchNoNota]);
+
+  useEffect(() => {
+    loadTransaksi();
+  }, [loadTransaksi]);
 
   const handleDelete = async (id: number, tanggal: string) => {
     if (
@@ -76,18 +80,25 @@ export default function TransaksiList() {
     });
   };
 
-  const filteredTransaksi = transaksiList.filter((transaksi) => {
-    const matchSearch =
-      transaksi.kasir?.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transaksi.id.toString().includes(searchTerm);
+  const handleSearch = () => {
+    setCurrentPage(1);
+    loadTransaksi();
+  };
 
-    const matchDate = filterDate
-      ? new Date(transaksi.tgl_transaksi).toDateString() ===
-        new Date(filterDate).toDateString()
-      : true;
+  const handleReset = () => {
+    setSearchNoNota("");
+    setFilterDate("");
+    setCurrentPage(1);
+  };
 
-    return matchSearch && matchDate;
-  });
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePerPageChange = (newPerPage: number) => {
+    setPerPage(newPerPage);
+    setCurrentPage(1);
+  };
 
   if (loading) {
     return (
@@ -141,17 +152,20 @@ export default function TransaksiList() {
       <section className="section">
         <div className="card">
           <div className="card-header">
-            <div className="row">
-              <div className="col-md-4">
+            <div className="row align-items-end">
+              <div className="col-md-3">
+                <label className="form-label">Nomor Nota</label>
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Cari ID atau nama kasir..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Cari nomor nota..."
+                  value={searchNoNota}
+                  onChange={(e) => setSearchNoNota(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                 />
               </div>
-              <div className="col-md-4">
+              <div className="col-md-3">
+                <label className="form-label">Tanggal</label>
                 <input
                   type="date"
                   className="form-control"
@@ -159,14 +173,24 @@ export default function TransaksiList() {
                   onChange={(e) => setFilterDate(e.target.value)}
                 />
               </div>
+              <div className="col-md-2">
+                <label className="form-label">Per Halaman</label>
+                <select
+                  className="form-select"
+                  value={perPage}
+                  onChange={(e) => handlePerPageChange(Number(e.target.value))}
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+              </div>
               <div className="col-md-4">
-                {(searchTerm || filterDate) && (
+                {(searchNoNota || filterDate) && (
                   <button
                     className="btn btn-secondary"
-                    onClick={() => {
-                      setSearchTerm("");
-                      setFilterDate("");
-                    }}
+                    onClick={handleReset}
                   >
                     <i className="bi bi-x-circle"></i> Reset Filter
                   </button>
@@ -186,39 +210,50 @@ export default function TransaksiList() {
               </div>
             )}
 
-            {filteredTransaksi.length === 0 ? (
+            {transaksiList.length === 0 ? (
               <div className="alert alert-info">
-                {searchTerm || filterDate
+                {searchNoNota || filterDate
                   ? "Tidak ada transaksi yang ditemukan"
                   : "Belum ada data transaksi"}
               </div>
             ) : (
-              <div className="table-responsive">
-                <table className="table table-striped table-hover">
-                  <thead>
-                    <tr>
-                      <th style={{ width: "5%" }}>No</th>
-                      <th style={{ width: "10%" }}>No Nota</th>
-                      <th style={{ width: "20%" }}>Tanggal</th>
-                      <th style={{ width: "15%" }}>Kasir</th>
-                      <th style={{ width: "15%" }}>Total</th>
-                      <th style={{ width: "15%" }}>Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredTransaksi.map((transaksi, index) => (
-                      <tr key={transaksi.id}>
-                        <td>{index + 1}</td>
-                        <td>
-                          <span className="badge bg-secondary">
-                            {transaksi.no_nota}
-                          </span>
-                        </td>
-                        <td>{formatDate(transaksi.tgl_transaksi)}</td>
-                        <td>{transaksi.kasir?.nama || "-"}</td>
-                        <td>
-                          <strong>{formatRupiah(transaksi.harga_total)}</strong>
-                        </td>
+              <>
+                <div className="table-responsive">
+                  <table className="table table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th style={{ width: "5%" }}>No</th>
+                        <th style={{ width: "10%" }}>No Nota</th>
+                        <th style={{ width: "20%" }}>Tanggal</th>
+                        <th style={{ width: "15%" }}>Kasir</th>
+                        <th style={{ width: "10%" }}>Jumlah Item</th>
+                        <th style={{ width: "15%" }}>Total</th>
+                        <th style={{ width: "15%" }}>Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {transaksiList.map((transaksi, index) => (
+                        <tr key={transaksi.id}>
+                          <td>
+                            {pagination
+                              ? (currentPage - 1) * perPage + index + 1
+                              : index + 1}
+                          </td>
+                          <td>
+                            <span className="badge bg-secondary">
+                              {transaksi.no_nota}
+                            </span>
+                          </td>
+                          <td>{formatDate(transaksi.tgl_transaksi)}</td>
+                          <td>{transaksi.kasir?.nama || "-"}</td>
+                          <td>
+                            <span className="badge bg-info">
+                              {transaksi.total_item || 0} item
+                            </span>
+                          </td>
+                          <td>
+                            <strong>{formatRupiah(transaksi.harga_total)}</strong>
+                          </td>
                         <td>
                           <div className="btn-group" role="group">
                             <Link
@@ -241,9 +276,117 @@ export default function TransaksiList() {
                         </td>
                       </tr>
                     ))}
-                  </tbody>
-                </table>
-              </div>
+                    </tbody>
+                  </table>
+                </div>
+
+                {pagination && (
+                  <div className="d-flex justify-content-between align-items-center mt-3">
+                    <div>
+                      <p className="text-muted mb-0">
+                        Menampilkan {(currentPage - 1) * perPage + 1} -{" "}
+                        {Math.min(currentPage * perPage, pagination.total)} dari{" "}
+                        {pagination.total} transaksi
+                      </p>
+                    </div>
+                    <nav>
+                      <ul className="pagination mb-0">
+                        <li
+                          className={`page-item ${
+                            currentPage === 1 ? "disabled" : ""
+                          }`}
+                        >
+                          <button
+                            className="page-link"
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                          >
+                            <i className="bi bi-chevron-left"></i>
+                          </button>
+                        </li>
+
+                        {/* First page */}
+                        {currentPage > 3 && (
+                          <>
+                            <li className="page-item">
+                              <button
+                                className="page-link"
+                                onClick={() => handlePageChange(1)}
+                              >
+                                1
+                              </button>
+                            </li>
+                            {currentPage > 4 && (
+                              <li className="page-item disabled">
+                                <span className="page-link">...</span>
+                              </li>
+                            )}
+                          </>
+                        )}
+
+                        {/* Pages around current */}
+                        {Array.from({ length: pagination.last_page }, (_, i) => i + 1)
+                          .filter(
+                            (page) =>
+                              page === currentPage ||
+                              page === currentPage - 1 ||
+                              page === currentPage - 2 ||
+                              page === currentPage + 1 ||
+                              page === currentPage + 2
+                          )
+                          .map((page) => (
+                            <li
+                              key={page}
+                              className={`page-item ${
+                                currentPage === page ? "active" : ""
+                              }`}
+                            >
+                              <button
+                                className="page-link"
+                                onClick={() => handlePageChange(page)}
+                              >
+                                {page}
+                              </button>
+                            </li>
+                          ))}
+
+                        {/* Last page */}
+                        {currentPage < pagination.last_page - 2 && (
+                          <>
+                            {currentPage < pagination.last_page - 3 && (
+                              <li className="page-item disabled">
+                                <span className="page-link">...</span>
+                              </li>
+                            )}
+                            <li className="page-item">
+                              <button
+                                className="page-link"
+                                onClick={() => handlePageChange(pagination.last_page)}
+                              >
+                                {pagination.last_page}
+                              </button>
+                            </li>
+                          </>
+                        )}
+
+                        <li
+                          className={`page-item ${
+                            currentPage === pagination.last_page ? "disabled" : ""
+                          }`}
+                        >
+                          <button
+                            className="page-link"
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === pagination.last_page}
+                          >
+                            <i className="bi bi-chevron-right"></i>
+                          </button>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

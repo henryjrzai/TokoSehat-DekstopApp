@@ -20,26 +20,52 @@ export interface TransaksiItem {
 
 export interface Transaksi {
   id: number;
-  kasir_id: number;
+  kasir_id?: number;
   no_nota: string;
   kasir?: {
     id: number;
     nama: string;
-    username: string;
-    hak_akses: string;
+    username?: string;
+    hak_akses?: string;
   };
   tgl_transaksi: string;
   harga_total: number;
   items?: TransaksiItem[];
+  total_item?: number;
   created_at?: string;
   updated_at?: string;
 }
 
-// Get all transaksi
-export const getAllTransaksi = async (): Promise<Transaksi[]> => {
+export interface PaginationData {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+  next_page_url: string | null;
+  prev_page_url: string | null;
+}
+
+export interface TransaksiListResponse {
+  status: boolean;
+  message: string;
+  data: Transaksi[];
+  pagination: PaginationData;
+}
+
+export interface TransaksiQueryParams {
+  date?: string;
+  noNota?: string;
+  per_page?: number;
+  page?: number;
+}
+
+// Get all transaksi with query params
+export const getAllTransaksi = async (
+  params?: TransaksiQueryParams
+): Promise<TransaksiListResponse> => {
   try {
-    const response = await axiosInstance.get("/transaksi");
-    return response.data.data;
+    const response = await axiosInstance.get("/transaksi", { params });
+    return response.data;
   } catch (error) {
     console.error("Error fetching transaksi:", error);
     throw error;
