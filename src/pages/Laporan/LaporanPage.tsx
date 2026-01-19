@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import {
   exportLaporanBulananPDF,
   downloadPDF,
-  getNamaBulan,
   LaporanBulananRequest,
 } from "../../services/laporanService";
 import {
@@ -11,9 +10,10 @@ import {
 } from "../../services/produkService";
 
 const LaporanPage = () => {
-  // State for Laporan Bulanan
-  const [bulan, setBulan] = useState(new Date().getMonth() + 1);
-  const [tahun, setTahun] = useState(new Date().getFullYear());
+  // State for Laporan Harian
+  const [tanggal, setTanggal] = useState(
+    new Date().toISOString().split("T")[0],
+  );
   const [loadingBulanan, setLoadingBulanan] = useState(false);
 
   // State for Product History
@@ -37,9 +37,7 @@ const LaporanPage = () => {
         setErrorHistory(null);
       } catch (err) {
         setErrorHistory(
-          err instanceof Error
-            ? err.message
-            : "Gagal memuat riwayat produk."
+          err instanceof Error ? err.message : "Gagal memuat riwayat produk.",
         );
       } finally {
         setLoadingHistory(false);
@@ -87,7 +85,13 @@ const LaporanPage = () => {
 
       return true;
     });
-  }, [history, filterTanggalAwal, filterTanggalAkhir, filterProduk, filterDistributor]);
+  }, [
+    history,
+    filterTanggalAwal,
+    filterTanggalAkhir,
+    filterProduk,
+    filterDistributor,
+  ]);
 
   const handleResetFilter = () => {
     setFilterTanggalAwal("");
@@ -96,32 +100,30 @@ const LaporanPage = () => {
     setFilterDistributor("");
   };
 
-  // Handler untuk Export Laporan Bulanan PDF
+  // Handler untuk Export Laporan Harian PDF
   const handleExportBulananPDF = async () => {
-    if (!bulan || !tahun) {
-      alert("Silakan pilih bulan dan tahun!");
+    if (!tanggal) {
+      alert("Silakan pilih tanggal!");
       return;
     }
 
     setLoadingBulanan(true);
     try {
       const params: LaporanBulananRequest = {
-        bulan,
-        tahun,
+        tanggal,
       };
 
       const blob = await exportLaporanBulananPDF(params);
-      const namaBulan = getNamaBulan(bulan);
-      const filename = `Laporan_Bulanan_${namaBulan}_${tahun}.pdf`;
+      const filename = `Laporan_Harian_${tanggal}.pdf`;
       downloadPDF(blob, filename);
 
-      alert("Laporan bulanan berhasil diunduh!");
+      alert("Laporan harian berhasil diunduh!");
     } catch (error) {
-      console.error("Error exporting bulanan PDF:", error);
+      console.error("Error exporting harian PDF:", error);
       const err = error as { response?: { data?: { message?: string } } };
       alert(
         err.response?.data?.message ||
-          "Gagal mengunduh laporan bulanan. Silakan coba lagi."
+          "Gagal mengunduh laporan harian. Silakan coba lagi.",
       );
     } finally {
       setLoadingBulanan(false);
@@ -143,50 +145,27 @@ const LaporanPage = () => {
 
       <section className="section">
         <div className="row">
-          {/* Laporan Bulanan */}
+          {/* Laporan Harian */}
           <div className="col-md-6">
             <div className="card">
               <div className="card-header">
-                <h4 className="card-title">Laporan Bulanan</h4>
+                <h4 className="card-title">Laporan Harian</h4>
               </div>
               <div className="card-body">
                 <div className="mb-3">
-                  <label className="form-label">Bulan</label>
-                  <select
-                    className="form-select"
-                    value={bulan}
-                    onChange={(e) => setBulan(Number(e.target.value))}
-                  >
-                    <option value={1}>Januari</option>
-                    <option value={2}>Februari</option>
-                    <option value={3}>Maret</option>
-                    <option value={4}>April</option>
-                    <option value={5}>Mei</option>
-                    <option value={6}>Juni</option>
-                    <option value={7}>Juli</option>
-                    <option value={8}>Agustus</option>
-                    <option value={9}>September</option>
-                    <option value={10}>Oktober</option>
-                    <option value={11}>November</option>
-                    <option value={12}>Desember</option>
-                  </select>
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Tahun</label>
+                  <label className="form-label">Tanggal</label>
                   <input
-                    type="number"
+                    type="date"
                     className="form-control"
-                    value={tahun}
-                    onChange={(e) => setTahun(Number(e.target.value))}
-                    min={2020}
-                    max={2099}
+                    value={tanggal}
+                    onChange={(e) => setTanggal(e.target.value)}
                   />
                 </div>
 
                 <button
                   className="btn btn-success w-100"
                   onClick={handleExportBulananPDF}
-                  disabled={loadingBulanan || !bulan || !tahun}
+                  disabled={loadingBulanan || !tanggal}
                 >
                   {loadingBulanan ? (
                     <>
@@ -200,7 +179,7 @@ const LaporanPage = () => {
                   ) : (
                     <>
                       <i className="bi bi-file-pdf me-2"></i>
-                      Export PDF Bulanan
+                      Export PDF Harian
                     </>
                   )}
                 </button>
@@ -258,10 +237,14 @@ const LaporanPage = () => {
                     />
                   </div>
                 </div>
-                 <div className="row mb-4">
+                <div className="row mb-4">
                   <div className="col-12 d-flex justify-content-end">
-                    <button className="btn btn-secondary" onClick={handleResetFilter}>
-                      <i className="bi bi-arrow-counterclockwise me-2"></i>Reset Filter
+                    <button
+                      className="btn btn-secondary"
+                      onClick={handleResetFilter}
+                    >
+                      <i className="bi bi-arrow-counterclockwise me-2"></i>Reset
+                      Filter
                     </button>
                   </div>
                 </div>
@@ -294,11 +277,17 @@ const LaporanPage = () => {
                             <tr key={item.id}>
                               <td>{index + 1}</td>
                               <td>{item.nama_produk}</td>
-                              <td><code>{item.kode_produk}</code></td>
+                              <td>
+                                <code>{item.kode_produk}</code>
+                              </td>
                               <td>{item.stok}</td>
                               <td>{item.satuan.nama_satuan}</td>
                               <td>{item.distributor || "-"}</td>
-                              <td>{new Date(item.tanggal_masuk).toLocaleString("id-ID")}</td>
+                              <td>
+                                {new Date(item.tanggal_masuk).toLocaleString(
+                                  "id-ID",
+                                )}
+                              </td>
                             </tr>
                           ))
                         ) : (

@@ -8,8 +8,7 @@ export interface LaporanPeriodeRequest {
 }
 
 export interface LaporanBulananRequest {
-  bulan: number; // 1-12
-  tahun: number;
+  tanggal: string; // format: YYYY-MM-DD
 }
 
 export interface LaporanProdukTerlarisRequest {
@@ -57,9 +56,7 @@ export interface LaporanBulananResponse {
   message: string;
   data: {
     periode: {
-      bulan: number;
-      tahun: number;
-      nama_bulan: string;
+      tanggal: string;
     };
     summary: {
       total_transaksi: number;
@@ -166,7 +163,7 @@ export interface StatistikMingguanResponse {
  * Get laporan transaksi berdasarkan periode
  */
 export const getLaporanPeriode = async (
-  params: LaporanPeriodeRequest
+  params: LaporanPeriodeRequest,
 ): Promise<LaporanPeriodeResponse> => {
   try {
     const response = await axiosInstance.post("/laporan/periode", params);
@@ -182,7 +179,7 @@ export const getLaporanPeriode = async (
  * Returns a blob URL or base64 string that can be downloaded
  */
 export const exportLaporanPeriodePDF = async (
-  params: LaporanPeriodeRequest
+  params: LaporanPeriodeRequest,
 ): Promise<Blob> => {
   try {
     const response = await axiosInstance.post("/laporan/periode/pdf", params, {
@@ -201,7 +198,7 @@ export const exportLaporanPeriodePDF = async (
  * Get laporan transaksi bulanan
  */
 export const getLaporanBulanan = async (
-  params: LaporanBulananRequest
+  params: LaporanBulananRequest,
 ): Promise<LaporanBulananResponse> => {
   try {
     const response = await axiosInstance.post("/laporan/bulanan", params);
@@ -217,7 +214,7 @@ export const getLaporanBulanan = async (
  * Returns a blob that can be downloaded
  */
 export const exportLaporanBulananPDF = async (
-  params: LaporanBulananRequest
+  params: LaporanBulananRequest,
 ): Promise<Blob> => {
   try {
     const response = await axiosInstance.post("/laporan/bulanan/pdf", params, {
@@ -236,12 +233,12 @@ export const exportLaporanBulananPDF = async (
  * Get laporan produk terlaris
  */
 export const getLaporanProdukTerlaris = async (
-  params: LaporanProdukTerlarisRequest
+  params: LaporanProdukTerlarisRequest,
 ): Promise<LaporanProdukTerlarisResponse> => {
   try {
     const response = await axiosInstance.post(
       "/laporan/produk-terlaris",
-      params
+      params,
     );
     return response.data;
   } catch (error) {
@@ -254,7 +251,7 @@ export const getLaporanProdukTerlaris = async (
  * Export laporan produk terlaris ke PDF
  */
 export const exportLaporanProdukTerlarisPDF = async (
-  params: LaporanProdukTerlarisRequest
+  params: LaporanProdukTerlarisRequest,
 ): Promise<Blob> => {
   try {
     const response = await axiosInstance.post(
@@ -262,7 +259,7 @@ export const exportLaporanProdukTerlarisPDF = async (
       params,
       {
         responseType: "blob",
-      }
+      },
     );
     return response.data;
   } catch (error) {
@@ -305,7 +302,7 @@ export const getStatistikComparison =
  * Get statistik tahunan (per bulan)
  */
 export const getStatistikTahunan = async (
-  tahun?: number
+  tahun?: number,
 ): Promise<StatistikTahunanResponse> => {
   try {
     const params = tahun ? { tahun } : {};
@@ -322,7 +319,7 @@ export const getStatistikTahunan = async (
  */
 export const getStatistikBulanan = async (
   bulan?: number,
-  tahun?: number
+  tahun?: number,
 ): Promise<StatistikBulananResponse> => {
   try {
     const params: Record<string, number> = {};
@@ -340,7 +337,7 @@ export const getStatistikBulanan = async (
  * Get statistik mingguan (7 hari terakhir)
  */
 export const getStatistikMingguan = async (
-  tanggal_akhir?: string
+  tanggal_akhir?: string,
 ): Promise<StatistikMingguanResponse> => {
   try {
     const params = tanggal_akhir ? { tanggal_akhir } : {};
