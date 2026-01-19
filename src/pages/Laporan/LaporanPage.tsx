@@ -3,6 +3,10 @@ import {
   exportLaporanBulananPDF,
   downloadPDF,
   LaporanBulananRequest,
+  getLaporanLabaRugi,
+  exportLaporanLabaRugiPDF,
+  LaporanLabaRugiRequest,
+  LaporanLabaRugiResponse,
 } from "../../services/laporanService";
 import {
   getAllProdukHistory,
@@ -15,6 +19,19 @@ const LaporanPage = () => {
     new Date().toISOString().split("T")[0],
   );
   const [loadingBulanan, setLoadingBulanan] = useState(false);
+
+  // State for Laporan Laba Rugi
+  const [tanggalAwalLabaRugi, setTanggalAwalLabaRugi] = useState(
+    new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+      .toISOString()
+      .split("T")[0],
+  );
+  const [tanggalAkhirLabaRugi, setTanggalAkhirLabaRugi] = useState(
+    new Date().toISOString().split("T")[0],
+  );
+  const [loadingLabaRugi, setLoadingLabaRugi] = useState(false);
+  const [dataLabaRugi, setDataLabaRugi] =
+    useState<LaporanLabaRugiResponse | null>(null);
 
   // State for Product History
   const [history, setHistory] = useState<AllProdukHistoryItem[]>([]);
@@ -130,6 +147,65 @@ const LaporanPage = () => {
     }
   };
 
+  // Handler untuk Lihat Laporan Laba Rugi
+  const handleViewLabaRugi = async () => {
+    if (!tanggalAwalLabaRugi || !tanggalAkhirLabaRugi) {
+      alert("Silakan pilih tanggal awal dan akhir!");
+      return;
+    }
+
+    setLoadingLabaRugi(true);
+    try {
+      const params: LaporanLabaRugiRequest = {
+        tanggal_awal: tanggalAwalLabaRugi,
+        tanggal_akhir: tanggalAkhirLabaRugi,
+      };
+
+      const response = await getLaporanLabaRugi(params);
+      setDataLabaRugi(response);
+    } catch (error) {
+      console.error("Error fetching laporan laba rugi:", error);
+      const err = error as { response?: { data?: { message?: string } } };
+      alert(
+        err.response?.data?.message ||
+          "Gagal mengambil laporan laba rugi. Silakan coba lagi.",
+      );
+    } finally {
+      setLoadingLabaRugi(false);
+    }
+  };
+
+  // Handler untuk Export Laporan Laba Rugi PDF
+  const handleExportLabaRugiPDF = async () => {
+    if (!tanggalAwalLabaRugi || !tanggalAkhirLabaRugi) {
+      alert("Silakan pilih tanggal awal dan akhir!");
+      return;
+    }
+
+    setLoadingLabaRugi(true);
+    try {
+      const params: LaporanLabaRugiRequest = {
+        tanggal_awal: tanggalAwalLabaRugi,
+        tanggal_akhir: tanggalAkhirLabaRugi,
+      };
+
+      const blob = await exportLaporanLabaRugiPDF(params);
+      const filename = `Laporan_Laba_Rugi_${tanggalAwalLabaRugi}_${tanggalAkhirLabaRugi}.pdf`;
+      downloadPDF(blob, filename);
+
+      alert("Laporan laba rugi berhasil diunduh!");
+    } catch (error) {
+      console.error("Error exporting laba rugi PDF:", error);
+      const err = error as { response?: { data?: { message?: string } } };
+      alert(
+        err.response?.data?.message ||
+          "Gagal mengunduh laporan laba rugi. Silakan coba lagi.",
+      );
+    } finally {
+      setLoadingLabaRugi(false);
+    }
+  };
+
   return (
     <div className="page-heading">
       <div className="page-title">
@@ -183,6 +259,149 @@ const LaporanPage = () => {
                     </>
                   )}
                 </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Laporan Laba Rugi */}
+          <div className="col-md-6">
+            <div className="card">
+              <div className="card-header">
+                <h4 className="card-title">Laporan Laba Rugi</h4>
+              </div>
+              <div className="card-body">
+                <div className="mb-3">
+                  <label className="form-label">Tanggal Awal</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={tanggalAwalLabaRugi}
+                    onChange={(e) => setTanggalAwalLabaRugi(e.target.value)}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Tanggal Akhir</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={tanggalAkhirLabaRugi}
+                    onChange={(e) => setTanggalAkhirLabaRugi(e.target.value)}
+                  />
+                </div>
+
+                <div className="d-grid gap-2">
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleViewLabaRugi}
+                    disabled={
+                      loadingLabaRugi ||
+                      !tanggalAwalLabaRugi ||
+                      !tanggalAkhirLabaRugi
+                    }
+                  >
+                    {loadingLabaRugi ? (
+                      <>
+                        <span
+                          className="spinner-border spinner-border-sm me-2"
+                          role="status"
+                          aria-hidden="true"
+                        ></span>
+                        Memuat...
+                      </>
+                    ) : (
+                      <>
+                        <i className="bi bi-eye me-2"></i>
+                        Lihat Laporan
+                      </>
+                    )}
+                  </button>
+                  <button
+                    className="btn btn-success"
+                    onClick={handleExportLabaRugiPDF}
+                    disabled={
+                      loadingLabaRugi ||
+                      !tanggalAwalLabaRugi ||
+                      !tanggalAkhirLabaRugi
+                    }
+                  >
+                    <i className="bi bi-file-pdf me-2"></i>
+                    Export PDF
+                  </button>
+                </div>
+
+                {/* Display Laba Rugi Data */}
+                {dataLabaRugi && (
+                  <div className="mt-4">
+                    <hr />
+                    <h5 className="mb-3">Hasil Laporan</h5>
+                    <div className="table-responsive">
+                      <table className="table table-sm">
+                        <tbody>
+                          <tr>
+                            <td className="fw-bold">Periode</td>
+                            <td>
+                              {new Date(
+                                dataLabaRugi.data.periode.tanggal_awal,
+                              ).toLocaleDateString("id-ID")}{" "}
+                              -{" "}
+                              {new Date(
+                                dataLabaRugi.data.periode.tanggal_akhir,
+                              ).toLocaleDateString("id-ID")}
+                            </td>
+                          </tr>
+                          <tr className="table-success">
+                            <td className="fw-bold">Total Pendapatan</td>
+                            <td className="fw-bold">
+                              Rp{" "}
+                              {dataLabaRugi.data.pendapatan.total_pendapatan_bersih.toLocaleString(
+                                "id-ID",
+                              )}
+                            </td>
+                          </tr>
+                          <tr className="table-danger">
+                            <td className="fw-bold">Total HPP</td>
+                            <td className="fw-bold">
+                              Rp{" "}
+                              {dataLabaRugi.data.harga_pokok_penjualan.total_hpp.toLocaleString(
+                                "id-ID",
+                              )}
+                            </td>
+                          </tr>
+                          <tr className="table-info">
+                            <td className="fw-bold">Laba Kotor</td>
+                            <td className="fw-bold">
+                              Rp{" "}
+                              {dataLabaRugi.data.laba_rugi.laba_kotor.toLocaleString(
+                                "id-ID",
+                              )}
+                              <span className="badge bg-info ms-2">
+                                {dataLabaRugi.data.laba_rugi.persentase_laba_kotor.toFixed(
+                                  2,
+                                )}
+                                %
+                              </span>
+                            </td>
+                          </tr>
+                          <tr className="table-primary">
+                            <td className="fw-bold">Laba Bersih</td>
+                            <td className="fw-bold">
+                              Rp{" "}
+                              {dataLabaRugi.data.laba_rugi.laba_bersih.toLocaleString(
+                                "id-ID",
+                              )}
+                              <span className="badge bg-primary ms-2">
+                                {dataLabaRugi.data.laba_rugi.persentase_laba_bersih.toFixed(
+                                  2,
+                                )}
+                                %
+                              </span>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

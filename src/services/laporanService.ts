@@ -17,6 +17,35 @@ export interface LaporanProdukTerlarisRequest {
   limit?: number; // default 10
 }
 
+export interface LaporanLabaRugiRequest {
+  tanggal_awal: string; // format: YYYY-MM-DD
+  tanggal_akhir: string; // format: YYYY-MM-DD
+}
+
+export interface LaporanLabaRugiResponse {
+  status: boolean;
+  message: string;
+  data: {
+    periode: {
+      tanggal_awal: string;
+      tanggal_akhir: string;
+    };
+    pendapatan: {
+      penjualan_barang: number;
+      total_pendapatan_bersih: number;
+    };
+    harga_pokok_penjualan: {
+      total_hpp: number;
+    };
+    laba_rugi: {
+      laba_kotor: number;
+      persentase_laba_kotor: number;
+      laba_bersih: number;
+      persentase_laba_bersih: number;
+    };
+  };
+}
+
 export interface TransaksiLaporan {
   id: number;
   no_nota: string;
@@ -226,7 +255,44 @@ export const exportLaporanBulananPDF = async (
     throw error;
   }
 };
+// ==================== LAPORAN LABA RUGI ====================
 
+/**
+ * Get laporan laba rugi
+ */
+export const getLaporanLabaRugi = async (
+  params: LaporanLabaRugiRequest,
+): Promise<LaporanLabaRugiResponse> => {
+  try {
+    const response = await axiosInstance.post("/laporan/laba-rugi", params);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching laporan laba rugi:", error);
+    throw error;
+  }
+};
+
+/**
+ * Export laporan laba rugi ke PDF
+ * Returns a blob that can be downloaded
+ */
+export const exportLaporanLabaRugiPDF = async (
+  params: LaporanLabaRugiRequest,
+): Promise<Blob> => {
+  try {
+    const response = await axiosInstance.post(
+      "/laporan/laba-rugi/pdf",
+      params,
+      {
+        responseType: "blob", // Important for PDF download
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error exporting laporan laba rugi PDF:", error);
+    throw error;
+  }
+};
 // ==================== LAPORAN PRODUK TERLARIS ====================
 
 /**
