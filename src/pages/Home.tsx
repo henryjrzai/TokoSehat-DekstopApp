@@ -295,8 +295,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="row">
-              {/* Yearly Chart */}
+            {/* <div className="row">
               <div className="col-12 col-lg-6">
                 <div className="card">
                   <div className="card-header">
@@ -314,7 +313,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Monthly Chart */}
               <div className="col-12 col-lg-6">
                 <div className="card">
                   <div className="card-header">
@@ -331,7 +329,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             <div className="row">
               {/* Weekly Chart */}
