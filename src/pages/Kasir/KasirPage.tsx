@@ -52,7 +52,7 @@ export default function KasirPage() {
   };
 
   // Calculate total
-  const total = cart.reduce((sum, item) => sum + item.subtotal, 0);
+  const total = cart.reduce((sum, item) => sum + (Number(item.subtotal) || 0), 0);
   const bayarNum = parseFloat(bayar) || 0;
   const kembalian = bayarNum - total;
 
@@ -70,7 +70,7 @@ export default function KasirPage() {
         // Map harga to harga_jual for consistency
         const products = response.data.map((p) => ({
           ...p,
-          harga_jual: p.harga,
+          harga_jual: Number(p.harga) || 0,
         }));
         setSearchResults(products);
       } catch (error) {
